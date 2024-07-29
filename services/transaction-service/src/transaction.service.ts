@@ -3,18 +3,20 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Transaction } from './entity/transaction.entity';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
-import axios from 'axios';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 @Injectable()
 export class TransactionService {
   constructor(
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
+    private readonly amqpConnection: AmqpConnection,
   ) {}
 
   async create(
     createTransactionDto: CreateTransactionDto,
   ): Promise<Transaction> {
+    // Verificação de duplicidade e criação da transação
     const existingTransaction = await this.transactionRepository.findOne({
       where: {
         userID: createTransactionDto.userID,
@@ -32,24 +34,43 @@ export class TransactionService {
     const newTransaction =
       this.transactionRepository.create(createTransactionDto);
     await this.transactionRepository.save(newTransaction);
-    await this.updateStatementService(newTransaction);
-
+    await this.emitTransactionCreatedEvent(newTransaction);
     return newTransaction;
   }
 
   async findAll(userID: string): Promise<Transaction[]> {
-    const transactions = await this.transactionRepository.find({
-      where: {
-        userID: userID,
-      },
-      order: {
-        date: 'DESC',
-      },
+    return this.transactionRepository.find({
+      where: { userID },
+      order: { id: 'DESC' },
     });
-    return transactions;
   }
 
-  private async updateStatementService(transaction: Transaction) {
-    await axios.post(process.env.UPDATE_STATEMENT_URL, transaction);
+  async createBatch(createTransactionDtos: CreateTransactionDto[]) {
+    // Publica o lote de transações no RabbitMQ
+    const jobs = [];
+    for (const createTransactionDto of createTransactionDtos) {
+      jobs.push(
+        this.amqpConnection.publish(
+          process.env.TRANSACTION_PROCESS_QUEUE_EXCHANGE,
+          process.env.TRANSACTION_PROCESS_QUEUE_ROUTING_KEY,
+          createTransactionDto,
+        ),
+      );
+    }
+    await Promise.all(jobs);
+  }
+
+  async processTransaction(createTransactionDto: CreateTransactionDto) {
+    // Processa cada transação recebida da fila
+    return this.create(createTransactionDto);
+  }
+
+  private async emitTransactionCreatedEvent(transaction: Transaction) {
+    // Publica eventos para outros serviços (e.g., StatementService)
+    await this.amqpConnection.publish(
+      process.env.UPDATE_STATEMENT_EXCHANGE,
+      process.env.RABBITMQ_ROUTING_KEY_CREATED,
+      transaction,
+    );
   }
 }

@@ -30,21 +30,24 @@ export class TransactionController {
     return this.transactionService.create(createTransactionDto);
   }
 
+  @Post('/batch')
+  @ApiOperation({ summary: 'Create a batch of transactions' })
+  @ApiResponse({
+    status: 200,
+    description: 'Batch processed successfully.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  @ApiBody({ type: [CreateTransactionDto] })
+  async createBatch(@Body() createTransactionDtos: CreateTransactionDto[]) {
+    return this.transactionService.createBatch(createTransactionDtos);
+  }
+
   @Get(':userID')
   @ApiOperation({ summary: 'Get all transactions of the user' })
   @ApiResponse({
     status: 200,
     description: 'Return all transactions for a user.',
     type: [Transaction],
-    example: [
-      {
-        userID: '1',
-        description: 'Test transaction',
-        amount: 100,
-        date: '2023-01-01',
-        type: 'ADDITION',
-      },
-    ],
   })
   @ApiParam({
     name: 'userID',
