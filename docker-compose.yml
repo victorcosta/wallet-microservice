@@ -1,0 +1,98 @@
+#docker network create wallet-microservices-net
+networks:
+  wallet-microservices-net:
+    external: true
+    name: wallet-microservices-net  
+
+services:
+  postgres-statement:
+    image: postgres:latest
+    hostname: postgres-statement
+    container_name: postgres-statement
+    restart: always
+    networks:
+      - wallet-microservices-net
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_pwd
+      POSTGRES_DB: statement_db
+    tty: true
+    volumes:
+      - statement-data:/var/lib/postgresql/data
+
+  postgres-transaction:
+    image: postgres:latest
+    hostname: postgres-transaction
+    container_name: postgres-transaction
+    restart: always
+    networks:
+      - wallet-microservices-net
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_pwd
+      POSTGRES_DB: transaction_db
+    tty: true
+    volumes:
+      - transaction-data:/var/lib/postgresql/data
+      
+
+  statement-service:
+    container_name: statement-service
+    build:
+      context: services/statement-service
+      dockerfile: Dockerfile
+      target: development
+    volumes:
+      - $PWD/services/statement-service:/app
+      - $PWD/services/statement-service/app/node_modules
+      - $HOME/.cache/yarn:/yarncache
+    command: yarn start:dev
+    environment:
+      - PORT=3000
+      - SERVICE_NAME=statement-service
+      # - OTHER_SERVICE_URL=http://service-name:PORT
+      - DATABASE_HOST=postgres-statement
+      - DATABASE_PORT=5432
+      - DATABASE_USER=postgres_user
+      - DATABASE_PASSWORD=postgres_pwd
+      - DATABASE_NAME=statement_db
+    networks:
+      - wallet-microservices-net
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres-statement   
+
+  transaction-service:
+    container_name: transaction-service
+    build:
+      context: services/transaction-service
+      dockerfile: Dockerfile
+      target: development
+    volumes:
+      - $PWD/services/transaction-service:/app
+      - $PWD/services/transaction-service/app/node_modules
+      - $HOME/.cache/yarn:/yarncache
+    command: yarn start:dev
+    environment:
+      - PORT=3001
+      - SERVICE_NAME=transaction-service
+      - UPDATE_STATEMENT_URL='http://statement-service:3000/statements'
+      - DATABASE_HOST=postgres-transaction
+      - DATABASE_PORT=5432
+      - DATABASE_USER=postgres_user
+      - DATABASE_PASSWORD=postgres_pwd
+      - DATABASE_NAME=transaction_db
+    networks:
+      - wallet-microservices-net
+    ports:
+      - 3001:3001
+    depends_on:
+      - postgres-transaction   
+volumes:
+  transaction-data:
+  statement-data:
