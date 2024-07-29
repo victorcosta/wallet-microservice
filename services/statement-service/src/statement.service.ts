@@ -11,19 +11,42 @@ export class StatementService {
     private statementRepository: Repository<Statement>,
   ) {}
 
-  async create(createStatementDto: CreateStatementDto): Promise<Statement> {
-    const lastStatement = await this.statementRepository.findOne({
-      where: { userID: createStatementDto.userID },
-      order: { date: 'DESC' },
+  private async saveStatement(
+    createStatementDto: CreateStatementDto,
+  ): Promise<Statement> {
+    const { userID, description, amount, date, type } = createStatementDto;
+
+    let balance = 0;
+
+    const existingStatements = await this.statementRepository.findOne({
+      where: { userID: userID },
+      order: { id: 'DESC' },
     });
-    const balance = lastStatement
-      ? lastStatement.balance + createStatementDto.amount
-      : createStatementDto.amount;
+
+    balance = existingStatements
+      ? Number(existingStatements.balance) + Number(amount)
+      : amount;
+
     const newStatement = this.statementRepository.create({
-      ...createStatementDto,
+      userID,
+      description,
+      amount,
+      date,
+      type,
       balance,
     });
+
     await this.statementRepository.save(newStatement);
+    return newStatement;
+  }
+
+  async handleTransactionCreated(createStatementDto: CreateStatementDto) {
+    // Lógica para lidar com a transação recebida via RabbitMQ
+    this.saveStatement(createStatementDto);
+  }
+
+  async create(createStatementDto: CreateStatementDto): Promise<Statement> {
+    const newStatement = await this.saveStatement(createStatementDto);
     return newStatement;
   }
 
@@ -44,13 +67,13 @@ export class StatementService {
       queryBuilder.andWhere('statement.date <= :toDate', { toDate });
     }
 
-    return queryBuilder.orderBy('statement.date', 'DESC').getMany();
+    return queryBuilder.orderBy('statement.id', 'DESC').getMany();
   }
 
   async getBalance(userID: string): Promise<number> {
     const latestStatement = await this.statementRepository.findOne({
       where: { userID },
-      order: { date: 'DESC' },
+      order: { id: 'DESC' },
     });
     return latestStatement ? latestStatement.balance : 0;
   }
