@@ -5,6 +5,17 @@ __metadata:
   version: 6
   cacheKey: 8
 
+"@acuminous/bitsyntax@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "@acuminous/bitsyntax@npm:0.1.2"
+  dependencies:
+    buffer-more-ints: ~1.0.0
+    debug: ^4.3.4
+    safe-buffer: ~5.1.2
+  checksum: d2f9f30dfc8ddb10673e4780fa997fbe43fe3b6cd996b9930803d1b3c5db42fd964f9dab225f9e1cc06a2a22832b5a04e37076f2d283365768c7bd9718642db4
+  languageName: node
+  linkType: hard
+
 "@ampproject/remapping@npm:^2.2.0":
   version: 2.3.0
   resolution: "@ampproject/remapping@npm:2.3.0"
@@ -474,6 +485,61 @@ __metadata:
   version: 8.57.0
   resolution: "@eslint/js@npm:8.57.0"
   checksum: 315dc65b0e9893e2bff139bddace7ea601ad77ed47b4550e73da8c9c2d2766c7a575c3cddf17ef85b8fd6a36ff34f91729d0dcca56e73ca887c10df91a41b0bb
+  languageName: node
+  linkType: hard
+
+"@golevelup/nestjs-common@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@golevelup/nestjs-common@npm:2.0.0"
+  dependencies:
+    lodash: ^4.17.21
+    nanoid: ^3.3.6
+  peerDependencies:
+    "@nestjs/common": ^10.x
+  checksum: 3e114dcd981749c12411ae525b734a95ea6a6ab2a556841996cf3d5a1e3e5be437eb13d894d6e08f784a5e024fa44398baaadb49c909cbd58ff96b893ec3ab2c
+  languageName: node
+  linkType: hard
+
+"@golevelup/nestjs-discovery@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "@golevelup/nestjs-discovery@npm:4.0.1"
+  dependencies:
+    lodash: ^4.17.21
+  peerDependencies:
+    "@nestjs/common": ^10.x
+    "@nestjs/core": ^10.x
+  checksum: 778bd1418869c0e85d7c41ff166c9bc62f99dc6d2303c15195de1be9e80fdac25a4b5913bda040fad1a2980d0825b8d3fd945b714a6ad1794df939e4052a0d95
+  languageName: node
+  linkType: hard
+
+"@golevelup/nestjs-modules@npm:^0.7.1":
+  version: 0.7.1
+  resolution: "@golevelup/nestjs-modules@npm:0.7.1"
+  dependencies:
+    lodash: ^4.17.21
+  peerDependencies:
+    "@nestjs/common": ^10.x
+    rxjs: ^7.x
+  checksum: 170707d7daa495656f9604a69720882d1f87188f14a1ef48a217dfd393bff3258f8fc49bfc3ff359435271c27d01bc8b81f067e0f0f962c00d7515a52aefdafe
+  languageName: node
+  linkType: hard
+
+"@golevelup/nestjs-rabbitmq@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "@golevelup/nestjs-rabbitmq@npm:5.3.0"
+  dependencies:
+    "@golevelup/nestjs-common": ^2.0.0
+    "@golevelup/nestjs-discovery": ^4.0.1
+    "@golevelup/nestjs-modules": ^0.7.1
+    amqp-connection-manager: ^4.1.14
+    amqplib: ^0.10.3
+    lodash: ^4.17.21
+  peerDependencies:
+    "@nestjs/common": ^10.x
+    "@nestjs/core": ^10.x
+    reflect-metadata: ^0.1.0 || ^0.2.0
+    rxjs: ^7.x
+  checksum: 2e7a536c19547a8890707c5cf6a3f05f2f133f473b548ab08eddd44b911007794682412db2de3a212661c7fdbd6780763b079246913a107ba04eb269980fdb4e
   languageName: node
   linkType: hard
 
@@ -965,6 +1031,49 @@ __metadata:
     class-validator:
       optional: true
   checksum: 575e68e833c6d5aacbfcca9b7cf6b2c858f5edcf70888bbb987e57365cfe1a225b175c358f39fd3904c136967e7ca8b1605d9a956c69e6252a8882f766169c96
+  languageName: node
+  linkType: hard
+
+"@nestjs/microservices@npm:^10.3.10":
+  version: 10.3.10
+  resolution: "@nestjs/microservices@npm:10.3.10"
+  dependencies:
+    iterare: 1.2.1
+    tslib: 2.6.3
+  peerDependencies:
+    "@grpc/grpc-js": "*"
+    "@nestjs/common": ^10.0.0
+    "@nestjs/core": ^10.0.0
+    "@nestjs/websockets": ^10.0.0
+    amqp-connection-manager: "*"
+    amqplib: "*"
+    cache-manager: "*"
+    ioredis: "*"
+    kafkajs: "*"
+    mqtt: "*"
+    nats: "*"
+    reflect-metadata: ^0.1.12 || ^0.2.0
+    rxjs: ^7.1.0
+  peerDependenciesMeta:
+    "@grpc/grpc-js":
+      optional: true
+    "@nestjs/websockets":
+      optional: true
+    amqp-connection-manager:
+      optional: true
+    amqplib:
+      optional: true
+    cache-manager:
+      optional: true
+    ioredis:
+      optional: true
+    kafkajs:
+      optional: true
+    mqtt:
+      optional: true
+    nats:
+      optional: true
+  checksum: bae7bd0fb08befe02576f1f7dd0c6d4af5c217ee10477ba5231e59e6ac7de67832cd16de2941e19e9bf9ec5812777dff9aac8f27a93714da08a5b0c97a0fe1ea
   languageName: node
   linkType: hard
 
@@ -1925,6 +2034,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"amqp-connection-manager@npm:^4.1.14":
+  version: 4.1.14
+  resolution: "amqp-connection-manager@npm:4.1.14"
+  dependencies:
+    promise-breaker: ^6.0.0
+  peerDependencies:
+    amqplib: "*"
+  checksum: 3e777e0ff87085001706644070a4bbf86dcd61f08e639dbf03fbd8cb9dca4d7ffdfaa884b28768f326c883557c65052f58875a3fdd060c2412a494ed78fa6d5a
+  languageName: node
+  linkType: hard
+
+"amqplib@npm:^0.10.3, amqplib@npm:^0.10.4":
+  version: 0.10.4
+  resolution: "amqplib@npm:0.10.4"
+  dependencies:
+    "@acuminous/bitsyntax": ^0.1.2
+    buffer-more-ints: ~1.0.0
+    readable-stream: 1.x >=1.1.9
+    url-parse: ~1.5.10
+  checksum: b93ae7f47c3af7f6977f1825d7c0e0bb8d2783330cf44345cd747e70ac53f09ca19a795df3b578dd5f239866d5b28b68412ade43da2f117bfeb4b71f4669794a
+  languageName: node
+  linkType: hard
+
 "ansi-colors@npm:4.1.3":
   version: 4.1.3
   resolution: "ansi-colors@npm:4.1.3"
@@ -2286,6 +2418,13 @@ __metadata:
   version: 1.1.2
   resolution: "buffer-from@npm:1.1.2"
   checksum: 0448524a562b37d4d7ed9efd91685a5b77a50672c556ea254ac9a6d30e3403a517d8981f10e565db24e8339413b43c97ca2951f10e399c6125a0d8911f5679bb
+  languageName: node
+  linkType: hard
+
+"buffer-more-ints@npm:~1.0.0":
+  version: 1.0.0
+  resolution: "buffer-more-ints@npm:1.0.0"
+  checksum: f6e88dade08a6d36f32d5f3ece141583a4f61d6c36970b16f4699bd00cfe95d4015525c2a741cf46eb918acfd61cac95683fb995189fd65c13b14949c90bfe75
   languageName: node
   linkType: hard
 
@@ -4076,7 +4215,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"inherits@npm:2, inherits@npm:2.0.4, inherits@npm:^2.0.1, inherits@npm:^2.0.3, inherits@npm:^2.0.4, inherits@npm:~2.0.3":
+"inherits@npm:2, inherits@npm:2.0.4, inherits@npm:^2.0.1, inherits@npm:^2.0.3, inherits@npm:^2.0.4, inherits@npm:~2.0.1, inherits@npm:~2.0.3":
   version: 2.0.4
   resolution: "inherits@npm:2.0.4"
   checksum: 4a48a733847879d6cf6691860a6b1e3f0f4754176e4d71494c41f3475553768b10f84b5ce1d40fbd0e34e6bfbb864ee35858ad4dd2cf31e02fc4a154b724d7f1
@@ -4240,6 +4379,13 @@ __metadata:
   version: 0.1.0
   resolution: "is-unicode-supported@npm:0.1.0"
   checksum: a2aab86ee7712f5c2f999180daaba5f361bdad1efadc9610ff5b8ab5495b86e4f627839d085c6530363c6d6d4ecbde340fb8e54bdb83da4ba8e0865ed5513c52
+  languageName: node
+  linkType: hard
+
+"isarray@npm:0.0.1":
+  version: 0.0.1
+  resolution: "isarray@npm:0.0.1"
+  checksum: 49191f1425681df4a18c2f0f93db3adb85573bcdd6a4482539d98eac9e705d8961317b01175627e860516a2fc45f8f9302db26e5a380a97a520e272e2a40a8d4
   languageName: node
   linkType: hard
 
@@ -5415,6 +5561,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nanoid@npm:^3.3.6":
+  version: 3.3.7
+  resolution: "nanoid@npm:3.3.7"
+  bin:
+    nanoid: bin/nanoid.cjs
+  checksum: d36c427e530713e4ac6567d488b489a36582ef89da1d6d4e3b87eded11eb10d7042a877958c6f104929809b2ab0bafa17652b076cdf84324aa75b30b722204f2
+  languageName: node
+  linkType: hard
+
 "natural-compare@npm:^1.4.0":
   version: 1.4.0
   resolution: "natural-compare@npm:1.4.0"
@@ -5980,6 +6135,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"promise-breaker@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "promise-breaker@npm:6.0.0"
+  checksum: 84939eb36b30ad39c141350f15d42fcfcfdeea0c4f288cf4d7b794450cc93823ea211ab76fa9edcda9ddc880f62829a63630ff04ff76f0c611b6f31a73a0a000
+  languageName: node
+  linkType: hard
+
 "promise-retry@npm:^2.0.1":
   version: 2.0.1
   resolution: "promise-retry@npm:2.0.1"
@@ -6049,6 +6211,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"querystringify@npm:^2.1.1":
+  version: 2.2.0
+  resolution: "querystringify@npm:2.2.0"
+  checksum: 5641ea231bad7ef6d64d9998faca95611ed4b11c2591a8cae741e178a974f6a8e0ebde008475259abe1621cb15e692404e6b6626e927f7b849d5c09392604b15
+  languageName: node
+  linkType: hard
+
 "queue-microtask@npm:^1.2.2":
   version: 1.2.3
   resolution: "queue-microtask@npm:1.2.3"
@@ -6088,6 +6257,18 @@ __metadata:
   version: 18.3.1
   resolution: "react-is@npm:18.3.1"
   checksum: e20fe84c86ff172fc8d898251b7cc2c43645d108bf96d0b8edf39b98f9a2cae97b40520ee7ed8ee0085ccc94736c4886294456033304151c3f94978cec03df21
+  languageName: node
+  linkType: hard
+
+"readable-stream@npm:1.x >=1.1.9":
+  version: 1.1.14
+  resolution: "readable-stream@npm:1.1.14"
+  dependencies:
+    core-util-is: ~1.0.0
+    inherits: ~2.0.1
+    isarray: 0.0.1
+    string_decoder: ~0.10.x
+  checksum: 17dfeae3e909945a4a1abc5613ea92d03269ef54c49288599507fc98ff4615988a1c39a999dcf9aacba70233d9b7040bc11a5f2bfc947e262dedcc0a8b32b5a0
   languageName: node
   linkType: hard
 
@@ -6151,6 +6332,13 @@ __metadata:
   version: 2.0.2
   resolution: "require-from-string@npm:2.0.2"
   checksum: a03ef6895445f33a4015300c426699bc66b2b044ba7b670aa238610381b56d3f07c686251740d575e22f4c87531ba662d06937508f0f3c0f1ddc04db3130560b
+  languageName: node
+  linkType: hard
+
+"requires-port@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "requires-port@npm:1.0.0"
+  checksum: eee0e303adffb69be55d1a214e415cf42b7441ae858c76dfc5353148644f6fd6e698926fc4643f510d5c126d12a705e7c8ed7e38061113bdf37547ab356797ff
   languageName: node
   linkType: hard
 
@@ -6284,7 +6472,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"safe-buffer@npm:~5.1.0, safe-buffer@npm:~5.1.1":
+"safe-buffer@npm:~5.1.0, safe-buffer@npm:~5.1.1, safe-buffer@npm:~5.1.2":
   version: 5.1.2
   resolution: "safe-buffer@npm:5.1.2"
   checksum: f2f1f7943ca44a594893a852894055cf619c1fbcb611237fc39e461ae751187e7baf4dc391a72125e0ac4fb2d8c5c0b3c71529622e6a58f46b960211e704903c
@@ -6614,6 +6802,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"string_decoder@npm:~0.10.x":
+  version: 0.10.31
+  resolution: "string_decoder@npm:0.10.31"
+  checksum: fe00f8e303647e5db919948ccb5ce0da7dea209ab54702894dd0c664edd98e5d4df4b80d6fabf7b9e92b237359d21136c95bf068b2f7760b772ca974ba970202
+  languageName: node
+  linkType: hard
+
 "string_decoder@npm:~1.1.1":
   version: 1.1.1
   resolution: "string_decoder@npm:1.1.1"
@@ -6916,11 +7111,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "transaction-service@workspace:."
   dependencies:
+    "@golevelup/nestjs-rabbitmq": ^5.3.0
     "@nestjs/cli": ^10.0.0
     "@nestjs/common": ^10.0.0
     "@nestjs/config": ^3.2.3
     "@nestjs/core": ^10.0.0
     "@nestjs/mapped-types": ^2.0.5
+    "@nestjs/microservices": ^10.3.10
     "@nestjs/platform-express": ^10.0.0
     "@nestjs/schematics": ^10.0.0
     "@nestjs/swagger": ^7.4.0
@@ -6932,6 +7129,8 @@ __metadata:
     "@types/supertest": ^6.0.0
     "@typescript-eslint/eslint-plugin": ^6.0.0
     "@typescript-eslint/parser": ^6.0.0
+    amqp-connection-manager: ^4.1.14
+    amqplib: ^0.10.4
     axios: ^1.7.2
     class-validator: ^0.14.1
     eslint: ^8.42.0
@@ -7334,6 +7533,16 @@ __metadata:
   dependencies:
     punycode: ^2.1.0
   checksum: 7167432de6817fe8e9e0c9684f1d2de2bb688c94388f7569f7dbdb1587c9f4ca2a77962f134ec90be0cc4d004c939ff0d05acc9f34a0db39a3c797dada262633
+  languageName: node
+  linkType: hard
+
+"url-parse@npm:~1.5.10":
+  version: 1.5.10
+  resolution: "url-parse@npm:1.5.10"
+  dependencies:
+    querystringify: ^2.1.1
+    requires-port: ^1.0.0
+  checksum: fbdba6b1d83336aca2216bbdc38ba658d9cfb8fc7f665eb8b17852de638ff7d1a162c198a8e4ed66001ddbf6c9888d41e4798912c62b4fd777a31657989f7bdf
   languageName: node
   linkType: hard
 

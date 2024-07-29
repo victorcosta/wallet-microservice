@@ -5,6 +5,19 @@ networks:
     name: wallet-microservices-net  
 
 services:
+  rabbitmq:
+    image: 'rabbitmq:3-management'
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      RABBITMQ_DEFAULT_USER: myuser
+      RABBITMQ_DEFAULT_PASS: mypassword
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - wallet-microservices-net
+
   postgres-statement:
     image: postgres:latest
     hostname: postgres-statement
@@ -54,7 +67,11 @@ services:
     environment:
       - PORT=3000
       - SERVICE_NAME=statement-service
-      # - OTHER_SERVICE_URL=http://service-name:PORT
+      - RABBITMQ_URI=amqp://myuser:mypassword@rabbitmq:5672
+      - TRANSACTION_QUEUE=transaction_queue
+      - UPDATE_STATEMENT_QUEUE=update_statement_queue
+      - UPDATE_STATEMENT_EXCHANGE=update_statement_exchange
+      - RABBITMQ_ROUTING_KEY=transaction_created
       - DATABASE_HOST=postgres-statement
       - DATABASE_PORT=5432
       - DATABASE_USER=postgres_user
@@ -65,7 +82,8 @@ services:
     ports:
       - 3000:3000
     depends_on:
-      - postgres-statement   
+      - postgres-statement
+      - rabbitmq
 
   transaction-service:
     container_name: transaction-service
@@ -81,7 +99,13 @@ services:
     environment:
       - PORT=3001
       - SERVICE_NAME=transaction-service
-      - UPDATE_STATEMENT_URL='http://statement-service:3000/statements'
+      - RABBITMQ_URI=amqp://myuser:mypassword@rabbitmq:5672
+      - RABBITMQ_ROUTING_KEY_CREATED=transaction_created
+      - UPDATE_STATEMENT_QUEUE=update_statement_queue
+      - UPDATE_STATEMENT_EXCHANGE=update_statement_exchange
+      - TRANSACTION_PROCESS_QUEUE_EXCHANGE=transaction_exchange
+      - TRANSACTION_PROCESS_QUEUE_ROUTING_KEY=transaction_key
+      - TRANSACTION_PROCESS_QUEUE_NAME=transaction_queue
       - DATABASE_HOST=postgres-transaction
       - DATABASE_PORT=5432
       - DATABASE_USER=postgres_user
@@ -92,7 +116,9 @@ services:
     ports:
       - 3001:3001
     depends_on:
-      - postgres-transaction   
+      - postgres-transaction
+      - rabbitmq
 volumes:
   transaction-data:
   statement-data:
+  rabbitmq_data:
