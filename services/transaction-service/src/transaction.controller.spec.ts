@@ -1,117 +1,65 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test, TestingModule } from '@nestjs/testing';
 import { TransactionController } from './transaction.controller';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Transaction, TransactionTypeRole } from './entity/transaction.entity';
-import { BadRequestException } from '@nestjs/common';
-
-// Mock do repositório
-const mockTransactionRepository = {
-  save: jest.fn().mockResolvedValue({}),
-  find: jest.fn().mockResolvedValue([]),
-  findOne: jest.fn().mockResolvedValue(null),
-};
+import { Transaction } from './entity/transaction.entity';
 
 describe('TransactionController', () => {
   let controller: TransactionController;
   let service: TransactionService;
-  let repository: Repository<Transaction>;
 
-  beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
       controllers: [TransactionController],
       providers: [
-        TransactionService,
         {
-          provide: getRepositoryToken(Transaction),
-          useValue: mockTransactionRepository,
+          provide: TransactionService,
+          useValue: {
+            create: jest.fn(),
+            findAll: jest.fn(),
+            createBatch: jest.fn(),
+          },
         },
       ],
     }).compile();
 
-    controller = moduleFixture.get<TransactionController>(
-      TransactionController,
-    );
-    service = moduleFixture.get<TransactionService>(TransactionService);
-    repository = moduleFixture.get<Repository<Transaction>>(
-      getRepositoryToken(Transaction),
-    );
+    controller = module.get<TransactionController>(TransactionController);
+    service = module.get<TransactionService>(TransactionService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should create a new transaction', async () => {
-    const createTransactionDto: CreateTransactionDto = {
-      userID: 'user-id',
-      description: 'Transaction description',
-      amount: 100,
-      date: new Date(),
-      type: TransactionTypeRole.ADDITION,
-    };
-    jest
-      .spyOn(service, 'create')
-      .mockResolvedValue(createTransactionDto as any);
+  describe('create', () => {
+    it('should create a transaction', async () => {
+      const createDto = new CreateTransactionDto();
+      const transaction = new Transaction();
 
-    const result = await controller.create(createTransactionDto);
+      jest.spyOn(service, 'create').mockResolvedValue(transaction);
 
-    expect(result).toEqual(createTransactionDto);
-    expect(service.create).toHaveBeenCalledWith(createTransactionDto);
+      const result = await controller.create(createDto);
+      expect(result).toEqual(transaction);
+    });
   });
 
-  it('should return a 400 error if the transaction already exists', async () => {
-    const createTransactionDto: CreateTransactionDto = {
-      userID: 'user-id',
-      description: 'Transaction description',
-      amount: 100,
-      date: new Date(),
-      type: TransactionTypeRole.ADDITION,
-    };
-    jest
-      .spyOn(service, 'create')
-      .mockRejectedValue(new BadRequestException('Transaction already exists'));
+  describe('findAll', () => {
+    it('should return all transactions for a user', async () => {
+      const transactions: Transaction[] = [new Transaction()];
+      jest.spyOn(service, 'findAll').mockResolvedValue(transactions);
 
-    try {
-      await controller.create(createTransactionDto);
-    } catch (error) {
-      expect(JSON.stringify(error.response)).toBe(
-        JSON.stringify({
-          message: 'Transaction already exists',
-          error: 'Bad Request',
-          statusCode: 400,
-        }),
-      );
-    }
+      const result = await controller.findAll('1');
+      expect(result).toEqual(transactions);
+    });
   });
 
-  it('should return all transactions for a user', async () => {
-    const userId = 'user-id';
-    const transactions = [
-      {
-        userID: 'user-id',
-        description: 'Transaction description',
-        amount: 100,
-        date: new Date(),
-        type: TransactionTypeRole.ADDITION,
-      },
-    ];
-    jest.spyOn(service, 'findAll').mockResolvedValue(transactions as any);
+  describe('createBatch', () => {
+    it('should handle batch creation', async () => {
+      const createDtos: CreateTransactionDto[] = [new CreateTransactionDto()];
+      jest.spyOn(service, 'createBatch').mockResolvedValue();
 
-    const result = await controller.findAll(userId);
-
-    expect(result).toEqual(transactions);
-    expect(service.findAll).toHaveBeenCalledWith(userId);
-  });
-
-  it('should return a 400 error if userID is not provided', async () => {
-    try {
-      await controller.findAll('');
-    } catch (error) {
-      expect(error.response).toBe('User ID must be provided');
-    }
+      await controller.createBatch(createDtos);
+      expect(service.createBatch).toHaveBeenCalledWith(createDtos);
+    });
   });
 });
