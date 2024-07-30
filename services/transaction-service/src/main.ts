@@ -6,10 +6,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Wallet Microservices')
-    .setDescription('API description for Wallet Microservices')
+    .setTitle('Transaction Service')
+    .setDescription('Responsible for managing transactions')
     .setVersion('1.0')
-    .addTag('transactions')
     .build();
   const document = SwaggerModule.createDocument(app, config, {
     deepScanRoutes: true,

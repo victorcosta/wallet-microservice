@@ -7,10 +7,8 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Statement Service')
-    .setDescription('The statement service API description')
+    .setDescription('Responsible for managing statement')
     .setVersion('1.0')
-    .addTag('transactions')
-    .addTag('statements')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
