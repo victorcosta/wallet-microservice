@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { StatementService } from './statement.service';
+import { StatementService } from '../statement.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
-import { Statement, TransactionTypeRole } from './entity/statement.entity';
-import { CreateStatementDto } from './dto/create-statement.dto';
+import { Statement, TransactionTypeRole } from '../entity/statement.entity';
+import { CreateStatementDto } from '../dto/create-statement.dto';
 
 describe('StatementService', () => {
   let service: StatementService;

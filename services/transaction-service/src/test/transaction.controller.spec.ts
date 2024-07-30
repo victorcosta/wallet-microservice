@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TransactionController } from './transaction.controller';
-import { TransactionService } from './transaction.service';
-import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { Transaction } from './entity/transaction.entity';
+import { TransactionController } from '../transaction.controller';
+import { TransactionService } from '../transaction.service';
+import { CreateTransactionDto } from '../dto/create-transaction.dto';
+import { Transaction } from '../entity/transaction.entity';
 
 describe('TransactionController', () => {
   let controller: TransactionController;

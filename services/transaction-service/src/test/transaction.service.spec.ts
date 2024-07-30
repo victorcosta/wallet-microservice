@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TransactionService } from './transaction.service';
+import { TransactionService } from '../transaction.service';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Transaction, TransactionTypeRole } from './entity/transaction.entity';
-import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { Transaction, TransactionTypeRole } from '../entity/transaction.entity';
+import { CreateTransactionDto } from '../dto/create-transaction.dto';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 describe('TransactionService', () => {

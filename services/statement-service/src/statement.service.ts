@@ -42,7 +42,7 @@ export class StatementService {
 
   async handleTransactionCreated(createStatementDto: CreateStatementDto) {
     // Lógica para lidar com a transação recebida via RabbitMQ
-    this.saveStatement(createStatementDto);
+    await this.saveStatement(createStatementDto);
   }
 
   async create(createStatementDto: CreateStatementDto): Promise<Statement> {

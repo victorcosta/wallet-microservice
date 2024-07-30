@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { StatementController } from './statement.controller';
-import { StatementService } from './statement.service';
-import { Statement } from './entity/statement.entity';
-import { TransactionTypeRole } from './entity/statement.entity';
-import { CreateStatementDto } from './dto/create-statement.dto';
+import { StatementController } from '../statement.controller';
+import { StatementService } from '../statement.service';
+import { Statement } from '../entity/statement.entity';
+import { TransactionTypeRole } from '../entity/statement.entity';
+import { CreateStatementDto } from '../dto/create-statement.dto';
 
 describe('StatementController', () => {
   let controller: StatementController;
