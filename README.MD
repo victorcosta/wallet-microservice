@@ -171,16 +171,6 @@ yarn install
 
 Execute os testes unitários e de integração de cada microserviço:
 
-#### Transaction Service
-
-
-```bash
-docker exec -it <container_id> /bin/bash
-yarn test
-```
-
-#### Statement Service
-
 ```bash
 docker exec -it <container_id> /bin/bash
 yarn test
