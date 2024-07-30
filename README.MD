@@ -6,7 +6,7 @@ Este projeto implementa uma arquitetura de microserviços para gerenciar transa�
 
 ## Arquitetura
 
-![architecture](https://github.com/user-attachments/assets/1146e91b-b84b-4950-80b7-4c8c4c384cc9)
+![architecture](https://raw.githubusercontent.com/victorcosta/wallet-microservice/main/architecture.jpg)
 
 ### Microserviços
 
