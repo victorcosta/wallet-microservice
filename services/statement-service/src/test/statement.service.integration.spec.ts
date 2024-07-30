@@ -5,7 +5,7 @@ import * as request from 'supertest';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { StatementModule } from '../statement.module';
 import { StatementService } from '../statement.service';
-import { Statement } from '../entity/statement.entity';
+import { Statement, TransactionTypeRole } from '../entity/statement.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
@@ -63,7 +63,7 @@ describe('StatementService (integration)', () => {
       description: 'Test Statement',
       amount: 100,
       date: new Date(),
-      type: 'ADDITION',
+      type: TransactionTypeRole.ADDITION,
     };
 
     return request(app.getHttpServer())

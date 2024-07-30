@@ -21,7 +21,7 @@ describe('TransactionService', () => {
             findOne: jest.fn(),
             create: jest.fn(),
             save: jest.fn(),
-            find: jest.fn(), // Ensure the 'find' method is mocked
+            find: jest.fn(),
           },
         },
         {
@@ -52,7 +52,7 @@ describe('TransactionService', () => {
 
       const transactionMock: Transaction = {
         ...createDto,
-        id: 1, // Assuming an ID for the mock
+        id: 1,
       };
 
       jest.spyOn(repository, 'findOne').mockResolvedValueOnce(null);
@@ -76,7 +76,7 @@ describe('TransactionService', () => {
 
       const transactionMock: Transaction = {
         ...createDto,
-        id: 1, // Providing the necessary ID for the transaction
+        id: 1,
       };
 
       jest.spyOn(repository, 'findOne').mockResolvedValueOnce(transactionMock);
@@ -102,7 +102,7 @@ describe('TransactionService', () => {
           description: 'Test transaction 2',
           amount: 200,
           date: new Date(),
-          type: TransactionTypeRole.WITHDRAWAL,
+          type: TransactionTypeRole.WITHDRAW,
         },
       ];
       await service.createBatch(transactions);
@@ -119,7 +119,7 @@ describe('TransactionService', () => {
           description: 'First transaction',
           amount: 100,
           date: new Date(),
-          type: TransactionTypeRole.WITHDRAWAL,
+          type: TransactionTypeRole.WITHDRAW,
         },
         {
           id: 2,
@@ -127,7 +127,7 @@ describe('TransactionService', () => {
           description: 'Second transaction',
           amount: 200,
           date: new Date(),
-          type: TransactionTypeRole.WITHDRAWAL,
+          type: TransactionTypeRole.WITHDRAW,
         },
       ];
       jest.spyOn(repository, 'find').mockResolvedValue(transactions);

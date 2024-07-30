@@ -66,7 +66,7 @@ describe('StatementController', () => {
         description: 'Another test transaction',
         amount: 200,
         date: new Date('2024-01-02T00:00:00.000Z'),
-        type: TransactionTypeRole.WITHDRAWAL,
+        type: TransactionTypeRole.WITHDRAW,
         balance: 300,
       },
     ];

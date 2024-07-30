@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { TransactionModule } from '../transaction.module';
 import { TransactionService } from '../transaction.service';
-import { Transaction } from '../entity/transaction.entity';
+import { Transaction, TransactionTypeRole } from '../entity/transaction.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
@@ -12,7 +13,6 @@ import { ConfigModule } from '@nestjs/config';
 
 describe('TransactionService (integration)', () => {
   let app: INestApplication;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let transactionRepository: Repository<Transaction>;
 
   beforeAll(async () => {
@@ -67,7 +67,7 @@ describe('TransactionService (integration)', () => {
       description: 'Test Transaction',
       amount: 100,
       date: new Date(),
-      type: 'ADDITION',
+      type: TransactionTypeRole.ADDITION,
     };
 
     return request(app.getHttpServer())

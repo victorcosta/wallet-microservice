@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum TransactionTypeRole {
   ADDITION = 'ADDITION',
-  WITHDRAWAL = 'WITHDRAWAL',
+  WITHDRAW = 'WITHDRAW',
   PURCHASE = 'PURCHASE',
   CANCELLATION = 'CANCELLATION',
   REVERSAL = 'REVERSAL',

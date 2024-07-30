@@ -66,7 +66,7 @@ export class TransactionService {
   }
 
   private async emitTransactionCreatedEvent(transaction: Transaction) {
-    // Publica eventos para outros serviços (e.g., StatementService)
+    // Publica eventos para outros serviços
     await this.amqpConnection.publish(
       process.env.UPDATE_STATEMENT_EXCHANGE,
       process.env.RABBITMQ_ROUTING_KEY_CREATED,

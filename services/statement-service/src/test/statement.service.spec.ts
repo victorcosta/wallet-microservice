@@ -51,8 +51,6 @@ describe('StatementService', () => {
     };
 
     it('should successfully create a new statement', async () => {
-      jest.spyOn(repository, 'findOne').mockResolvedValueOnce(null);
-
       const result = await service.create(createDto);
       expect(result).toEqual({
         ...createDto,
@@ -71,7 +69,7 @@ describe('StatementService', () => {
         amount: 50,
         date: new Date(),
         type: TransactionTypeRole.ADDITION,
-        balance: 50, // Saldo inicial antes da operação
+        balance: 50,
       };
 
       jest
@@ -83,7 +81,7 @@ describe('StatementService', () => {
         .mockImplementation(async (statement: Statement) => {
           return {
             ...statement,
-            balance: existingStatement.balance + createDto.amount, // Isto fará com que o saldo seja 150
+            balance: existingStatement.balance + createDto.amount,
           };
         });
 
@@ -96,7 +94,7 @@ describe('StatementService', () => {
       };
 
       const result = await service.create(createDto);
-      expect(result.balance).toBe(100); // Verifica se o saldo é o esperado
+      expect(result.balance).toBe(100);
     });
 
     it('should throw an error if save fails', async () => {
@@ -127,7 +125,7 @@ describe('StatementService', () => {
           description: 'Transaction 2',
           amount: 200,
           date: new Date('2022-01-20'),
-          type: TransactionTypeRole.WITHDRAWAL,
+          type: TransactionTypeRole.WITHDRAW,
           balance: 0,
         },
       ];
@@ -175,7 +173,7 @@ describe('StatementService', () => {
         expect(options.where).toMatchObject({
           date: Between(fromDate.toISOString(), toDate.toISOString()),
         });
-        return Promise.resolve([]); // Assuma que não há declarações para simplificar
+        return Promise.resolve([]); // Assumindo que não há declarações para simplificar
       });
 
       await service.findAll('1', undefined, toDate.toISOString());
