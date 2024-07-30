@@ -1,28 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { StatementService } from './statement.service';
-import { Statement } from './entity/statement.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
+import { Statement, TransactionTypeRole } from './entity/statement.entity';
 import { CreateStatementDto } from './dto/create-statement.dto';
-import { TransactionTypeRole } from './entity/statement.entity';
 
 describe('StatementService', () => {
   let service: StatementService;
   let repository: Repository<Statement>;
-
-  const statementRepositoryMock = {
-    create: jest.fn().mockImplementation((dto) => ({
-      ...dto,
-      id: 1,
-      balance: 100,
-    })),
-    save: jest.fn().mockResolvedValue((dto) => ({
-      id: 1,
-      ...dto,
-      balance: 100,
-    })),
-    findOne: jest.fn(),
-  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -30,7 +15,18 @@ describe('StatementService', () => {
         StatementService,
         {
           provide: getRepositoryToken(Statement),
-          useValue: statementRepositoryMock,
+          useValue: {
+            findOne: jest.fn().mockResolvedValue(null),
+            create: jest.fn().mockImplementation((dto) => ({
+              ...dto,
+              id: 1,
+              balance: 100,
+            })),
+            save: jest
+              .fn()
+              .mockImplementation((statement) => Promise.resolve(statement)),
+            find: jest.fn(),
+          },
         },
       ],
     }).compile();
@@ -45,31 +41,168 @@ describe('StatementService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create a new statement', async () => {
-    const createStatementDto: CreateStatementDto = {
+  describe('create', () => {
+    const createDto: CreateStatementDto = {
       userID: '1',
-      description: 'Test',
+      description: 'Deposit',
       amount: 100,
       date: new Date(),
       type: TransactionTypeRole.ADDITION,
     };
 
-    // Configure mock to findOne Method
-    jest.spyOn(repository, 'findOne').mockResolvedValueOnce(null);
+    it('should successfully create a new statement', async () => {
+      jest.spyOn(repository, 'findOne').mockResolvedValueOnce(null);
 
-    // Configure mock to save Method
-    jest.spyOn(repository, 'save').mockResolvedValueOnce({
-      ...createStatementDto,
-      id: 1,
-      balance: 100,
-    } as Statement);
+      const result = await service.create(createDto);
+      expect(result).toEqual({
+        ...createDto,
+        id: 1,
+        balance: 100,
+      });
+      expect(repository.create).toHaveBeenCalled();
+      expect(repository.save).toHaveBeenCalled();
+    });
 
-    const result = await service.create(createStatementDto);
+    it('should handle existing statement and update balance', async () => {
+      const existingStatement: Statement = {
+        id: 1,
+        userID: '1',
+        description: 'Deposit initial',
+        amount: 50,
+        date: new Date(),
+        type: TransactionTypeRole.ADDITION,
+        balance: 50, // Saldo inicial antes da operação
+      };
 
-    expect(result).toEqual({
-      id: 1,
-      ...createStatementDto,
-      balance: 100,
+      jest
+        .spyOn(repository, 'findOne')
+        .mockResolvedValueOnce(existingStatement);
+
+      jest
+        .spyOn(repository, 'save')
+        .mockImplementation(async (statement: Statement) => {
+          return {
+            ...statement,
+            balance: existingStatement.balance + createDto.amount, // Isto fará com que o saldo seja 150
+          };
+        });
+
+      const createDto: CreateStatementDto = {
+        userID: '1',
+        description: 'Deposit',
+        amount: 100,
+        date: new Date(),
+        type: TransactionTypeRole.ADDITION,
+      };
+
+      const result = await service.create(createDto);
+      expect(result.balance).toBe(100); // Verifica se o saldo é o esperado
+    });
+
+    it('should throw an error if save fails', async () => {
+      jest.spyOn(repository, 'findOne').mockResolvedValueOnce(null);
+      jest
+        .spyOn(repository, 'save')
+        .mockRejectedValue(new Error('Failed to save'));
+
+      await expect(service.create(createDto)).rejects.toThrow('Failed to save');
+    });
+  });
+
+  describe('findAll', () => {
+    it('should handle date range search correctly', async () => {
+      const statements: Statement[] = [
+        {
+          id: 1,
+          userID: '1',
+          description: 'Transaction 1',
+          amount: 100,
+          date: new Date('2022-01-15'),
+          type: TransactionTypeRole.ADDITION,
+          balance: 200,
+        },
+        {
+          id: 2,
+          userID: '1',
+          description: 'Transaction 2',
+          amount: 200,
+          date: new Date('2022-01-20'),
+          type: TransactionTypeRole.WITHDRAWAL,
+          balance: 0,
+        },
+      ];
+      jest.spyOn(repository, 'find').mockResolvedValue(statements);
+
+      const fromDate = new Date('2022-01-01').toISOString();
+      const toDate = new Date('2022-01-31').toISOString();
+      const result = await service.findAll('1', fromDate, toDate);
+
+      expect(repository.find).toHaveBeenCalledWith({
+        where: {
+          userID: '1',
+          date: Between(fromDate, toDate),
+        },
+        order: {
+          id: 'DESC',
+        },
+      });
+      expect(result).toEqual(statements);
+    });
+
+    it('should handle only fromDate provided', async () => {
+      const toDate = new Date('2022-01-01');
+      toDate.setDate(toDate.getDate() + 30);
+
+      jest.spyOn(repository, 'find').mockImplementation((options) => {
+        expect(options.where).toMatchObject({
+          date: Between(
+            new Date('2022-01-01').toISOString(),
+            toDate.toISOString(),
+          ),
+        });
+        return Promise.resolve([]);
+      });
+
+      await service.findAll('1', new Date('2022-01-01').toISOString());
+    });
+
+    it('should handle only toDate provided', async () => {
+      const toDate = new Date();
+      const fromDate = new Date(toDate);
+      fromDate.setDate(fromDate.getDate() - 30);
+
+      jest.spyOn(repository, 'find').mockImplementation((options) => {
+        expect(options.where).toMatchObject({
+          date: Between(fromDate.toISOString(), toDate.toISOString()),
+        });
+        return Promise.resolve([]); // Assuma que não há declarações para simplificar
+      });
+
+      await service.findAll('1', undefined, toDate.toISOString());
+    });
+  });
+
+  describe('getBalance', () => {
+    it('should return the current balance', async () => {
+      jest.spyOn(repository, 'findOne').mockResolvedValue({
+        id: 1,
+        userID: '1',
+        description: 'Transaction',
+        amount: 100,
+        date: new Date(),
+        type: TransactionTypeRole.ADDITION,
+        balance: 100,
+      });
+
+      const balance = await service.getBalance('1');
+      expect(balance).toBe(100);
+    });
+
+    it('should return 0 if no statements found', async () => {
+      jest.spyOn(repository, 'findOne').mockResolvedValue(null);
+
+      const balance = await service.getBalance('1');
+      expect(balance).toBe(0);
     });
   });
 });

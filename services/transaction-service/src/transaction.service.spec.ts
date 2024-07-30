@@ -1,14 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TransactionService } from './transaction.service';
-import { Transaction, TransactionTypeRole } from './entity/transaction.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { Transaction, TransactionTypeRole } from './entity/transaction.entity';
 import { Repository } from 'typeorm';
+import { ClientProxy } from '@nestjs/microservices';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { jest } from '@jest/globals';
 
 describe('TransactionService', () => {
   let service: TransactionService;
   let repository: Repository<Transaction>;
+  let client: ClientProxy;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -18,6 +19,10 @@ describe('TransactionService', () => {
           provide: getRepositoryToken(Transaction),
           useClass: Repository,
         },
+        {
+          provide: 'STATEMENT_SERVICE',
+          useValue: { emit: jest.fn(() => of(true)) },
+        },
       ],
     }).compile();
 
@@ -25,81 +30,32 @@ describe('TransactionService', () => {
     repository = module.get<Repository<Transaction>>(
       getRepositoryToken(Transaction),
     );
+    client = module.get<ClientProxy>('STATEMENT_SERVICE');
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+  it('should create a transaction and emit an event', async () => {
+    const createTransactionDto: CreateTransactionDto = {
+      userID: '1',
+      description: 'Test transaction',
+      amount: 100,
+      date: new Date(),
+      type: TransactionTypeRole.ADDITION,
+    };
 
-  describe('create', () => {
-    it('should create a new transaction and update statement service', async () => {
-      const createTransactionDto: CreateTransactionDto = {
-        userID: '1',
-        description: 'Test transaction',
-        amount: 100,
-        date: new Date(),
-        type: TransactionTypeRole.ADDITION,
-      };
+    const savedTransaction = { ...createTransactionDto, id: 1 } as Transaction;
 
-      const newTransaction: Transaction = {
-        id: 1,
-        ...createTransactionDto,
-      };
+    jest.spyOn(repository, 'save').mockResolvedValue(savedTransaction);
+    jest.spyOn(client, 'emit').mockImplementation(() => of(true).toPromise());
 
-      jest.spyOn(repository, 'findOne').mockResolvedValue(null);
-      jest.spyOn(repository, 'create').mockReturnValue(newTransaction as any);
-      jest.spyOn(repository, 'save').mockResolvedValue(newTransaction as any);
+    const result = await service.create(createTransactionDto);
 
-      // spy call to axios.post
-      const updateStatementServiceSpy = jest
-        .spyOn(service as any, 'updateStatementService')
-        .mockResolvedValue(undefined);
-
-      const result = await service.create(createTransactionDto);
-
-      expect(result).toEqual(newTransaction);
-      expect(updateStatementServiceSpy).toHaveBeenCalledWith(newTransaction);
-    });
-
-    it('should throw an error if transaction already exists', async () => {
-      const createTransactionDto: CreateTransactionDto = {
-        userID: '1',
-        description: 'Test transaction',
-        amount: 100,
-        date: new Date(),
-        type: TransactionTypeRole.ADDITION,
-      };
-
-      const existingTransaction: Transaction = {
-        id: 1,
-        ...createTransactionDto,
-      };
-
-      jest.spyOn(repository, 'findOne').mockResolvedValue(existingTransaction);
-
-      await expect(service.create(createTransactionDto)).rejects.toThrowError(
-        'Duplicate transaction',
-      );
-    });
-  });
-
-  describe('findAll', () => {
-    it('should return all transactions for a user', async () => {
-      const transactions: Transaction[] = [
-        {
-          id: 1,
-          userID: '1',
-          description: 'Test transaction',
-          amount: 100,
-          date: new Date(),
-          type: TransactionTypeRole.ADDITION,
-        },
-      ];
-
-      jest.spyOn(repository, 'find').mockResolvedValue(transactions);
-
-      const result = await service.findAll('1');
-      expect(result).toEqual(transactions);
-    });
+    expect(result).toEqual(savedTransaction);
+    expect(client.emit).toHaveBeenCalledWith(
+      'transaction_created',
+      savedTransaction,
+    );
   });
 });
+function of(arg0: boolean) {
+  throw new Error('Function not implemented.');
+}

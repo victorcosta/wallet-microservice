@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { StatementController } from './statement.controller';
 import { StatementService } from './statement.service';
+import { Statement } from './entity/statement.entity';
+import { TransactionTypeRole } from './entity/statement.entity';
 import { CreateStatementDto } from './dto/create-statement.dto';
-import { Statement, TransactionTypeRole } from './entity/statement.entity';
 
 describe('StatementController', () => {
   let controller: StatementController;
@@ -15,8 +16,8 @@ describe('StatementController', () => {
         {
           provide: StatementService,
           useValue: {
-            create: jest.fn(),
             findAll: jest.fn(),
+            create: jest.fn(),
             getBalance: jest.fn(),
           },
         },
@@ -27,53 +28,68 @@ describe('StatementController', () => {
     service = module.get<StatementService>(StatementService);
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-
   it('should create a new statement', async () => {
-    const createStatementDto: CreateStatementDto = {
+    const createDto: CreateStatementDto = {
       userID: '1',
-      description: 'Test',
-      amount: 100,
-      date: new Date(),
+      description: 'New Deposit',
+      amount: 150,
+      date: new Date('2024-01-03T00:00:00.000Z'),
       type: TransactionTypeRole.ADDITION,
     };
-
-    const result: Statement = {
-      id: 1,
-      ...createStatementDto,
-      balance: 100,
+    const expectedStatement: Statement = {
+      ...createDto,
+      id: 3,
+      balance: 250,
     };
 
-    jest.spyOn(service, 'create').mockResolvedValue(result);
+    jest.spyOn(service, 'create').mockResolvedValue(expectedStatement);
 
-    expect(await controller.create(createStatementDto)).toBe(result);
+    const result = await controller.create(createDto);
+    expect(result).toEqual(expectedStatement);
+    expect(service.create).toHaveBeenCalledWith(createDto);
   });
 
-  it('should get all statements for a user', async () => {
+  it('should return all statements for a user', async () => {
     const statements: Statement[] = [
       {
         id: 1,
         userID: '1',
-        description: 'Test',
+        description: 'Test transaction',
         amount: 100,
-        date: new Date(),
+        date: new Date('2024-01-01T00:00:00.000Z'),
         type: TransactionTypeRole.ADDITION,
         balance: 100,
+      },
+      {
+        id: 2,
+        userID: '1',
+        description: 'Another test transaction',
+        amount: 200,
+        date: new Date('2024-01-02T00:00:00.000Z'),
+        type: TransactionTypeRole.WITHDRAWAL,
+        balance: 300,
       },
     ];
 
     jest.spyOn(service, 'findAll').mockResolvedValue(statements);
 
-    expect(await controller.findAll('1')).toBe(statements);
+    const result = await controller.findAll('1', '2024-01-01', '2024-01-02');
+    expect(result).toEqual(statements);
+    expect(service.findAll).toHaveBeenCalledWith(
+      '1',
+      '2024-01-01',
+      '2024-01-02',
+    );
   });
 
-  it('should get the balance for a user', async () => {
-    const balance = 100;
+  it('should return the balance for a user', async () => {
+    const userID = '1';
+    const balance = 500;
 
     jest.spyOn(service, 'getBalance').mockResolvedValue(balance);
 
-    expect(await controller.getBalance('1')).toBe(balance);
+    const result = await controller.getBalance(userID);
+    expect(result).toBe(balance);
+    expect(service.getBalance).toHaveBeenCalledWith(userID);
   });
 });

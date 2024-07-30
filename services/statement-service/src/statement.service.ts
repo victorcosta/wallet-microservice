@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { Statement } from './entity/statement.entity';
 import { CreateStatementDto } from './dto/create-statement.dto';
 
@@ -55,19 +55,29 @@ export class StatementService {
     fromDate?: string,
     toDate?: string,
   ): Promise<Statement[]> {
-    const queryBuilder =
-      this.statementRepository.createQueryBuilder('statement');
+    const whereConditions: any = { userID };
 
-    queryBuilder.andWhere('statement.userID = :userID', { userID });
-
-    if (fromDate) {
-      queryBuilder.andWhere('statement.date >= :fromDate', { fromDate });
+    if (fromDate && toDate) {
+      // Se ambas as datas estão presentes, use Between
+      whereConditions.date = Between(fromDate, toDate);
+    } else if (fromDate) {
+      // Se somente fromDate é fornecido, calcule toDate como 30 dias para frente
+      const toDate = new Date(fromDate);
+      toDate.setDate(toDate.getDate() + 30);
+      whereConditions.date = Between(fromDate, toDate.toISOString());
+    } else if (toDate) {
+      // Se somente toDate é fornecido, calcule fromDate como 30 dias para trás
+      const fromDate = new Date(toDate);
+      fromDate.setDate(fromDate.getDate() - 30);
+      whereConditions.date = Between(fromDate.toISOString(), toDate);
     }
-    if (toDate) {
-      queryBuilder.andWhere('statement.date <= :toDate', { toDate });
-    }
 
-    return queryBuilder.orderBy('statement.id', 'DESC').getMany();
+    return this.statementRepository.find({
+      where: whereConditions,
+      order: {
+        id: 'DESC',
+      },
+    });
   }
 
   async getBalance(userID: string): Promise<number> {

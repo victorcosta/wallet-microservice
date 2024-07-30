@@ -47,11 +47,6 @@ export class StatementController {
     @Query('fromDate') fromDate?: string,
     @Query('toDate') toDate?: string,
   ): Promise<Statement[]> {
-    console.log(
-      'userID = ' + userID,
-      'fromDate = ' + fromDate,
-      'toDate = ' + toDate,
-    );
     return this.statementService.findAll(userID, fromDate, toDate);
   }
 
