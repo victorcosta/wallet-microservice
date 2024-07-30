@@ -172,7 +172,7 @@ yarn install
 Execute os testes unitários e de integração de cada microserviço:
 
 ```bash
-docker exec -it <container_id> /bin/bash
+docker exec -it <container_id> /bin/sh
 yarn test
 ```
 
