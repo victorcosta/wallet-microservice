@@ -135,13 +135,19 @@ git clone https://github.com/seu-usuario/wallet-microservices.git
 cd wallet-microservices
 ```
 
-2. Suba os containers Docker:
+2. Crie a rede no Docker:
+
+```bash
+docker network create wallet-microservices-net
+```
+
+3. Suba os containers Docker:
 
 ```bash
 docker-compose up -d
 ```
 
-3. Instale as dependências de cada microserviço:
+4. Instale as dependências de cada microserviço:
 
 ```bash
 cd services/transaction-service
